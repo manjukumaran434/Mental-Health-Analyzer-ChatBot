@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Support ChatBot</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .chat-container {
+            width: 500px;
+            height: 700px;
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.9);
+            opacity: 0;
+            animation: fadeInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            border: 1px solid #e4e6eb;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px) scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .chat-header {
+            background-color: #ffffff;
+            color: #050505;
+            padding: 16px 20px;
+            font-size: 18px;
+            font-weight: 600;
+            border-bottom: 1px solid #e4e6eb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-header::before {
+            content: "";
+            display: block;
+            width: 12px;
+            height: 12px;
+            background-color: #0084ff;
+            border-radius: 50%;
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f0f2f5;
+            scroll-behavior: smooth;
+        }
+
+        .chat-footer {
+            padding: 16px;
+            background-color: #fff;
+            border-top: 1px solid #e4e6eb;
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-footer input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e4e6eb;
+            border-radius: 20px;
+            outline: none;
+            font-size: 15px;
+            background-color: #f0f2f5;
+            transition: all 0.2s ease;
+        }
+
+        .chat-footer input:focus {
+            background-color: #fff;
+            border-color: #0084ff;
+        }
+
+        .chat-footer button {
+            padding: 12px;
+            background-color: #0084ff;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .chat-footer button:hover {
+            background-color: #0066cc;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+            animation: messageIn 0.3s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes messageIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+            animation-delay: 0.1s;
+        }
+
+        .message.ai {
+            justify-content: flex-start;
+        }
+
+        .message p {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            font-size: 15px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            margin: 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .message.user p {
+            background-color: #0084ff;
+            color: #fff;
+            border-radius: 18px 18px 4px 18px;
+        }
+
+        .message.ai p {
+            background-color: #fff;
+            color: #050505;
+            border-radius: 4px 18px 18px 18px;
+            border: 1px solid #e4e6eb;
+        }
+
+        .typing-indicator {
+            display: flex;
+            padding: 12px 16px;
+            background-color: #fff;
+            border-radius: 4px 18px 18px 18px;
+            border: 1px solid #e4e6eb;
+            width: fit-content;
+            margin-bottom: 16px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #65676b;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 20px;
+            color: #65676b;
+            font-size: 14px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            Mental Health Support
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="welcome-message">
+                <p>Hello! I'm here to support your mental wellbeing. Share what's on your mind.</p>
+            </div>
+            <div class="message ai">
+                <p>Welcome! I'm your mental health assistant. You can talk to me about anything - stress, anxiety, relationships, or just how you're feeling today.</p>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="user-input" placeholder="Message..." autocomplete="off">
+            <button onclick="sendMessage()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const chatBody = document.getElementById('chat-body');
+        const userInput = document.getElementById('user-input');
+
+        // Handle Enter key press
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            userInput.value = '';
+
+            // Show typing indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'message ai';
+            typingIndicator.innerHTML = `
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            chatBody.appendChild(typingIndicator);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            // Send message to backend
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message }),
+                });
+                const data = await response.json();
+
+                // Remove typing indicator
+                chatBody.removeChild(typingIndicator);
+
+                // Add AI response to chat
+                addMessage(data.response, 'ai');
+            } catch (error) {
+                console.error('Error:', error);
+                chatBody.removeChild(typingIndicator);
+                addMessage("Sorry, I'm having trouble connecting. Please try again later.", 'ai');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${sender}`;
+            messageElement.innerHTML = `<p>${text}</p>`;
+            
+            // Add animation delay based on message length
+            const delay = Math.min(text.length * 20, 500);
+            messageElement.style.animationDelay = `${delay}ms`;
+            
+            chatBody.appendChild(messageElement);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+    </script>
+</body>
+</html>
